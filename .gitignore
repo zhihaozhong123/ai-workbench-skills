@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# 打包产物
+dist/
+*.xskill
+
+# 环境
+.env
+.venv/
+
+# 系统
+.DS_Store
