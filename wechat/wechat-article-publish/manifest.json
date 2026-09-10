@@ -1,21 +1,22 @@
 {
   "schema_version": 1,
   "slug": "wechat-article-publish",
-  "name": "公众号文章批量发布",
-  "version": "1.1.0",
-  "description": "把内容草稿一键发布到微信公众号，支持 NLP 自动生成标题/摘要/关键词/封面图描述。",
-  "author": "zhihaozhong123",
+  "name": "公众号文章发布",
+  "version": "2.7.0",
+  "description": "微信公众号写作与发布助手：先澄清标题、字数、排版与正文格式，确认后自动打开公众号后台新建图文、填写内容并保存为草稿；支持编辑已有草稿。非写作需求也可正常聊天。",
+  "author": "智作台",
   "emoji": "📤",
+  "logo": "logo.svg",
   "category": "公众号",
-  "homepage": "https://github.com/zhihaozhong123/wechat-article-publish",
+  "homepage": "https://github.com/zhihaozhong123/ai-workbench",
+  "permissions": ["local_control"],
+  "min_app_version": "0.1.0",
+  "system_prompt_file": "AGENTS.md",
   "runtime": {
     "type": "python",
     "entry": "scripts/main.py",
     "cli": "run",
-    "timeout_seconds": 30,
-    "env_whitelist": ["WECHAT_APP_ID", "WECHAT_APP_SECRET"]
-  },
-  "system_prompt_file": "AGENT.md",
-  "permissions": ["network"],
-  "min_app_version": "0.1.0"
+    "timeout_seconds": 160,
+    "env_whitelist": []
+  }
 }

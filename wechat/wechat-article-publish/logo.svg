@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-label="微信公众号文章发布技能 logo">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#7c5cff"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="flame" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- 火箭主体 -->
+  <path d="M32 12 c7 9 8 20 6 30 h-12 c-2-10 -1-21 6-30z" fill="#ffffff" opacity="0.97"/>
+  <!-- 火箭侧翼 -->
+  <path d="M22 40 l-4 10 l10-4 z" fill="#ffffff" opacity="0.85"/>
+  <path d="M42 40 l4 10 l-10-4 z" fill="#ffffff" opacity="0.85"/>
+  <!-- 火箭舱窗 -->
+  <circle cx="32" cy="28" r="4" fill="#2563eb"/>
+  <circle cx="32" cy="28" r="2" fill="#bfdbfe"/>
+  <!-- 火焰 -->
+  <path d="M28 46 h8 l-2 7 h-4 z" fill="url(#flame)"/>
+  <path d="M30 52 h4 l-1 4 h-2 z" fill="#fbbf24"/>
+</svg>
