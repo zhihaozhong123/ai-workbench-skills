@@ -2,14 +2,16 @@
   "schema_version": 1,
   "slug": "wechat-article-publish",
   "name": "公众号文章发布",
-  "version": "2.7.0",
-  "description": "微信公众号写作与发布助手：先澄清标题、字数、排版与正文格式，确认后自动打开公众号后台新建图文、填写内容并保存为草稿；支持编辑已有草稿。非写作需求也可正常聊天。",
+  "version": "2.8.0",
+  "description": "123456微信公众号写作与发布助手：先澄清标题、字数、排版与正文格式，确认后自动打开公众号后台新建图文、填写内容并保存为草稿；支持编辑已有草稿。非写作需求也可正常聊天。",
   "author": "智作台",
   "emoji": "📤",
   "logo": "logo.svg",
   "category": "公众号",
   "homepage": "https://github.com/zhihaozhong123/ai-workbench",
-  "permissions": ["local_control"],
+  "permissions": [
+    "local_control"
+  ],
   "min_app_version": "0.1.0",
   "system_prompt_file": "AGENTS.md",
   "runtime": {
