@@ -32,8 +32,8 @@ LAYOUTS = {
     "B": "清新文艺风",
     "C": "干货清单风",
     "D": "深度叙事风",
+    "E": "创意互动风"
 }
-
 
 def _normalize_layout(raw: str) -> str:
     """把用户/Agent 传入的排版标识归一化为正式排版名。"""
