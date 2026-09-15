@@ -142,7 +142,8 @@ HTML，**不管文章属于哪个排版模板/题材**，都必须产出「每�
 全文不得出现英文双引号/反引号/反斜杠，否则引号转义必然出事故）。禁止产出裸结构 HTML
 （`<p>文字</p>` 不带任何 style）——那种 HTML 贴进编辑器就是「全部挤成一坨」，视为失败：
 
-- **外层容器**：`<section style='font-size:15px;color:#3f3f3f;line-height:1.9;letter-spacing:0.5px;padding:0 8px;'>`，全部内容包在里面；
+- **基础样式（逐块自洽）**：打字机模式逐块粘贴时**没有外层总容器**，基础字号/行距/字色
+  必须写进**每个块**自身的 style：每段都带 `font-size:15px;color:#3f3f3f;line-height:1.9;letter-spacing:0.5px;`；
 - **段落**：`<p style='margin:0 0 20px 0;text-align:justify;'>…</p>`——段间距必须显式给 margin；
 - **小标题**：`<section style='margin:36px 0 20px 0;'>` + 装饰（左侧色条 `border-left:4px solid 主题色; padding-left:12px;` 或居中序号圆点），字号 17~18px、加粗、主题色；
 - **金句/引用**：`<blockquote style='margin:24px 0;padding:14px 16px;background:#f7f7f7;border-left:3px solid 主题色;color:#888;'>`；文艺风金句可居中并加大字距；
@@ -441,26 +442,31 @@ tell application "Google Chrome" to execute front window's active tab javascript
 })()"
 ```
 
-**写入 HTML 正文（HTML 载体必须走这条路径，2026-09-15 v2 实测定稿）：**
+**写入 HTML 正文（HTML 载体必须走这条路径，2026-09-15 v3 打字机模式实测定稿）：**
 
 原理（本机在公众号编辑器实测结论）：`execCommand('insertHTML')` 会把内容当**行内内容**插进
 `<span leaf>`，编辑器随后异步规范化时**剥掉全部块级结构与样式**（挤成一坨的事故根源）；
 唯一可靠路径是**把 HTML 放进剪贴板的 HTML 富文本 flavor（NSPasteboardTypeHTML）再 ⌘V 粘贴**——
 编辑器粘贴管道会把块级结构+内联样式原样解析进正文（与秀米/135编辑器同机制，实测样式全保留）。
 
+**打字机模式（2026-09-15 用户要求，硬性）**：正文必须**逐段分块粘贴**，绝不一次性整篇贴入——
+把整篇 HTML 按**顶层块**拆开（每个 `<p>` / 小标题 `<section>` / `<blockquote>` / 分隔符各一块），
+循环「写剪贴板 → ⌘V → delay 0.4」，用户就能看到文章一段一段像打字机一样逐块出现在编辑器里
+（实测：顺序追加正确、样式全保留）。逐字符键入对 HTML 不可行（会撕碎标签结构），段落级即标准做法。
+**拆块规则**：每块必须是**自洽的完整标签对**（`<p …>…</p>`、`<section …>…</section>`），
+**不设外层总容器**——绝不允许把一个容器的开标签和闭标签拆进两个不同的块；
+基础字号/行距直接写进每个块自身的 style 里（如每段都带 `font-size:15px;line-height:1.9;`）。
+
 用法（三步，全部在**一个** AppleScript 里完成）：
-1. 按要素 4 规范生成整篇 HTML，**压成一行**，**所有标签属性一律用单引号**（`<p style='margin:0 0 20px;'>`），
-   全文不得出现英文双引号、反引号、反斜杠——这样 AppleScript 层零转义，杜绝引号事故；
-2. 把下面脚本里 `__HTML__` 替换为该单行 HTML 后执行（脚本自带：写入剪贴板 HTML flavor →
-   聚焦正文区 → 清空旧内容 → ⌘V → 读回校验）：
+1. 按要素 4 规范生成整篇 HTML，**按顶层块拆成若干段**，**所有标签属性一律用单引号**
+   （`<p style='margin:0 0 20px;'>`），任何一块内不得出现英文双引号、反引号、反斜杠、
+   逗号后直接跟换行——AppleScript 层零转义，杜绝引号事故；
+2. 把每块填入下面脚本 `blocksList` 的各列表项后执行（脚本自带：聚焦正文区 → 清空旧内容 →
+   逐段「写剪贴板 HTML flavor → ⌘V → delay 0.4」→ 全部贴完读回校验）：
 ```applescript
 use framework "AppKit"
 use scripting additions
-set htmlStr to "__HTML__"
-set nsStr to current application's NSString's stringWithString:htmlStr
-set pb to current application's NSPasteboard's generalPasteboard()
-pb's clearContents()
-pb's setData:(nsStr's dataUsingEncoding:(current application's NSUTF8StringEncoding)) forType:(current application's NSPasteboardTypeHTML)
+set blocksList to {"__块1__", "__块2__", "__块3__"}
 tell application "Google Chrome"
   activate
   set jsFocus to "(function(){var best=null;var els=document.querySelectorAll('[contenteditable=\"true\"]');for(var i=0;i<els.length;i++){if(!best||els[i].offsetHeight>best.offsetHeight)best=els[i];}if(!best)return 'ERR_NO_BODY';best.focus();var s=window.getSelection();s.removeAllRanges();var r=document.createRange();r.selectNodeContents(best);s.addRange(r);document.execCommand('delete');return 'CLEARED';})()"
@@ -468,7 +474,15 @@ tell application "Google Chrome"
   if fr is not "CLEARED" then return fr
   delay 1
 end tell
-tell application "System Events" to keystroke "v" using command down
+repeat with blk in blocksList
+  set htmlStr to (blk as text)
+  set nsStr to current application's NSString's stringWithString:htmlStr
+  set pb to current application's NSPasteboard's generalPasteboard()
+  pb's clearContents()
+  pb's setData:(nsStr's dataUsingEncoding:(current application's NSUTF8StringEncoding)) forType:(current application's NSPasteboardTypeHTML)
+  tell application "System Events" to keystroke "v" using command down
+  delay 0.4
+end repeat
 delay 2
 tell application "Google Chrome" to execute front window's active tab javascript "(function(){var best=null;var els=document.querySelectorAll('[contenteditable=\"true\"]');for(var i=0;i<els.length;i++){if(!best||els[i].offsetHeight>best.offsetHeight)best=els[i];}if(!best)return 'ERR_NO_BODY';var h=best.innerHTML;var styled=h.indexOf('style=')>=0;var blocks=(h.match(/<(p|section|h2|h3|blockquote)[\\s>]/g)||[]).length;return 'HTML_PASTED styled='+styled+' blocks='+blocks+' len='+best.textContent.length+' | '+best.textContent.slice(0,50);})()"
 ```
