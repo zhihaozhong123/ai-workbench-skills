@@ -2,7 +2,7 @@
   "schema_version": 1,
   "slug": "wechat-article-publish",
   "name": "公众号文章发布",
-  "version": "2.9.3",
+  "version": "2.9.4",
   "description": "微信公众号写作助手，支持自动发布文章",
   "author": "智作台",
   "emoji": "📤",
